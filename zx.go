@@ -92,6 +92,9 @@ func (RWUtil rwUtil) connectStandby(connection *DmConnection) error {
 	if err != nil {
 		return err
 	}
+	if db == nil {
+		return nil
+	}
 
 	standbyConnectorValue := *connection.dmConnector
 	standbyConnector := &standbyConnectorValue
@@ -118,8 +121,12 @@ func (RWUtil rwUtil) chooseValidStandby(connection *DmConnection) (*ep, error) {
 		stmt, rs, err = connection.driverQuery(SQL_SELECT_STANDBY)
 	}
 	defer func() {
-		rs.close()
-		stmt.close()
+		if rs != nil {
+			rs.close()
+		}
+		if stmt != nil {
+			stmt.close()
+		}
 	}()
 	if err == nil {
 		count := int32(rs.CurrentRows.getRowCount())
@@ -190,14 +197,14 @@ func (RWUtil rwUtil) executeByConn(conn *DmConnection, query string, execute1 fu
 	}
 
 	switch curConn.lastExecInfo.retSqlType {
-	case Dm_build_359, Dm_build_360, Dm_build_364, Dm_build_371, Dm_build_370, Dm_build_362:
+	case Dm_build_101, Dm_build_102, Dm_build_106, Dm_build_113, Dm_build_112, Dm_build_104:
 		{
 
 			if otherConn != nil {
 				execute2(otherConn)
 			}
 		}
-	case Dm_build_369:
+	case Dm_build_111:
 		{
 
 			sqlhead := regexp.MustCompile("[ (]").Split(strings.TrimSpace(query), 2)[0]
@@ -207,7 +214,7 @@ func (RWUtil rwUtil) executeByConn(conn *DmConnection, query string, execute1 fu
 				}
 			}
 		}
-	case Dm_build_368:
+	case Dm_build_110:
 		{
 
 			if conn.dmConnector.rwHA && curConn == conn.rwInfo.connStandby &&
@@ -261,7 +268,7 @@ func (RWUtil rwUtil) executeByStmt(stmt *DmStatement, execute1 func() (interface
 	}
 
 	switch curStmt.execInfo.retSqlType {
-	case Dm_build_359, Dm_build_360, Dm_build_364, Dm_build_371, Dm_build_370, Dm_build_362:
+	case Dm_build_101, Dm_build_102, Dm_build_106, Dm_build_113, Dm_build_112, Dm_build_104:
 		{
 
 			if otherStmt != nil {
@@ -269,7 +276,7 @@ func (RWUtil rwUtil) executeByStmt(stmt *DmStatement, execute1 func() (interface
 				execute2(otherStmt)
 			}
 		}
-	case Dm_build_369:
+	case Dm_build_111:
 		{
 
 			var tmpsql string
@@ -288,7 +295,7 @@ func (RWUtil rwUtil) executeByStmt(stmt *DmStatement, execute1 func() (interface
 				}
 			}
 		}
-	case Dm_build_368:
+	case Dm_build_110:
 		{
 
 			if stmt.dmConn.dmConnector.rwHA && curStmt == stmt.rwInfo.stmtStandby &&
@@ -407,7 +414,7 @@ func (RWUtil rwUtil) isStandbyStatementValid(statement *DmStatement) bool {
 
 func (RWUtil rwUtil) copyStatement(srcStmt *DmStatement, destStmt *DmStatement) {
 	destStmt.nativeSql = srcStmt.nativeSql
-	destStmt.params = srcStmt.params
+	destStmt.serverParams = srcStmt.serverParams
+	destStmt.bindParams = srcStmt.bindParams
 	destStmt.paramCount = srcStmt.paramCount
-	destStmt.curRowBindIndicator = srcStmt.curRowBindIndicator
 }

@@ -5,6 +5,7 @@
 package dm
 
 import (
+	"database/sql/driver"
 	"gitee.com/travelliu/dm/util"
 	"math"
 	"strconv"
@@ -24,6 +25,14 @@ type DmIntervalYM struct {
 	years          int
 	months         int
 	scaleForSvr    int
+
+	Valid bool
+}
+
+func newDmIntervalYM() *DmIntervalYM {
+	return &DmIntervalYM{
+		Valid: true,
+	}
 }
 
 func NewDmIntervalYMByString(str string) (ym *DmIntervalYM, err error) {
@@ -32,7 +41,7 @@ func NewDmIntervalYMByString(str string) (ym *DmIntervalYM, err error) {
 			err = ECGO_INVALID_TIME_INTERVAL.throw()
 		}
 	}()
-	ym = new(DmIntervalYM)
+	ym = newDmIntervalYM()
 	ym.isLeadScaleSet = false
 	if err = ym.parseIntervYMString(strings.TrimSpace(str)); err != nil {
 		return nil, err
@@ -41,19 +50,19 @@ func NewDmIntervalYMByString(str string) (ym *DmIntervalYM, err error) {
 }
 
 func newDmIntervalYMByBytes(bytes []byte) *DmIntervalYM {
-	ym := new(DmIntervalYM)
+	ym := newDmIntervalYM()
 
-	ym.scaleForSvr = int(Dm_build_885.Dm_build_987(bytes, 8))
+	ym.scaleForSvr = int(Dm_build_649.Dm_build_751(bytes, 8))
 	ym.leadScale = (ym.scaleForSvr >> 4) & 0x0000000F
 	ym._type = bytes[9]
 	switch ym._type {
 	case QUA_Y:
-		ym.years = int(Dm_build_885.Dm_build_987(bytes, 0))
+		ym.years = int(Dm_build_649.Dm_build_751(bytes, 0))
 	case QUA_YM:
-		ym.years = int(Dm_build_885.Dm_build_987(bytes, 0))
-		ym.months = int(Dm_build_885.Dm_build_987(bytes, 4))
+		ym.years = int(Dm_build_649.Dm_build_751(bytes, 0))
+		ym.months = int(Dm_build_649.Dm_build_751(bytes, 4))
 	case QUA_MO:
-		ym.months = int(Dm_build_885.Dm_build_987(bytes, 4))
+		ym.months = int(Dm_build_649.Dm_build_751(bytes, 4))
 	}
 	return ym
 }
@@ -71,6 +80,9 @@ func (ym *DmIntervalYM) GetYMType() byte {
 }
 
 func (ym *DmIntervalYM) String() string {
+	if !ym.Valid {
+		return ""
+	}
 	str := "INTERVAL "
 	var year, month string
 	var l int
@@ -145,6 +157,8 @@ func (dest *DmIntervalYM) Scan(src interface{}) error {
 	switch src := src.(type) {
 	case nil:
 		*dest = *new(DmIntervalYM)
+
+		(*dest).Valid = false
 		return nil
 	case *DmIntervalYM:
 		*dest = *src
@@ -159,6 +173,13 @@ func (dest *DmIntervalYM) Scan(src interface{}) error {
 	default:
 		return UNSUPPORTED_SCAN
 	}
+}
+
+func (ym DmIntervalYM) Value() (driver.Value, error) {
+	if !ym.Valid {
+		return nil, nil
+	}
+	return ym, nil
 }
 
 func (ym *DmIntervalYM) parseIntervYMString(str string) error {
@@ -414,9 +435,9 @@ func (ym *DmIntervalYM) encode(scale int) ([]byte, error) {
 	}
 
 	bytes := make([]byte, 12)
-	Dm_build_885.Dm_build_901(bytes, 0, int32(year))
-	Dm_build_885.Dm_build_901(bytes, 4, int32(month))
-	Dm_build_885.Dm_build_901(bytes, 8, int32(scale))
+	Dm_build_649.Dm_build_665(bytes, 0, int32(year))
+	Dm_build_649.Dm_build_665(bytes, 4, int32(month))
+	Dm_build_649.Dm_build_665(bytes, 8, int32(scale))
 	return bytes, nil
 }
 
@@ -456,5 +477,17 @@ func (ym *DmIntervalYM) convertTo(scale int) (*DmIntervalYM, error) {
 		months:      month,
 		scaleForSvr: scale,
 		leadScale:   (scale >> 4) & 0x0000000F,
+		Valid:       true,
 	}, nil
+}
+
+func (ym *DmIntervalYM) checkValid() error {
+	if !ym.Valid {
+		return ECGO_IS_NULL.throw()
+	}
+	return nil
+}
+
+func (d *DmIntervalYM) GormDataType() string {
+	return "INTERVAL YEAR TO MONTH"
 }

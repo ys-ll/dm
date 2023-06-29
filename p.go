@@ -13,9 +13,9 @@ import (
 )
 
 // 发版标记
-var version = "8.1.1.190"
-var build_date = "2021.03.15"
-var svn = "5974"
+var version = "8.1.3.12"
+var build_date = "2023.04.17"
+var svn = "16532"
 
 var globalDmDriver = newDmDriver()
 
@@ -42,7 +42,8 @@ func driverInit(svcConfPath string) {
 
 type DmDriver struct {
 	filterable
-	readPropMutex sync.Mutex
+	mu sync.Mutex
+	//readPropMutex sync.Mutex
 }
 
 func newDmDriver() *DmDriver {
@@ -55,10 +56,14 @@ func newDmDriver() *DmDriver {
  ** PUBLIC METHODS AND FUNCTIONS
  *************************************************************/
 func (d *DmDriver) Open(dsn string) (driver.Conn, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
 	return d.open(dsn)
 }
 
 func (d *DmDriver) OpenConnector(dsn string) (driver.Connector, error) {
+	d.mu.Lock()
+	defer d.mu.Unlock()
 	return d.openConnector(dsn)
 }
 
@@ -74,9 +79,9 @@ func (d *DmDriver) openConnector(dsn string) (*DmConnector, error) {
 	connector := new(DmConnector).init()
 	connector.url = dsn
 	connector.dmDriver = d
-	d.readPropMutex.Lock()
+	//d.readPropMutex.Lock()
 	err := connector.mergeConfigs(dsn)
-	d.readPropMutex.Unlock()
+	//d.readPropMutex.Unlock()
 	if err != nil {
 		return nil, err
 	}
