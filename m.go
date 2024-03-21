@@ -13,6 +13,7 @@ import (
 	"gitee.com/travelliu/dm/parser"
 	"gitee.com/travelliu/dm/util"
 	"golang.org/x/text/encoding"
+	"strings"
 	"sync"
 	"sync/atomic"
 )
@@ -751,6 +752,14 @@ func (dc *DmConnection) getServerEncoding() string {
 		return dc.dmConnector.charCode
 	}
 	return dc.serverEncoding
+}
+
+func (dc *DmConnection) getClientEncoding() string {
+	return dc.dmConnector.clientEncoding
+}
+
+func (dc *DmConnection) ServerClientEncodingSame() bool {
+	return strings.EqualFold(dc.serverEncoding, dc.dmConnector.clientEncoding)
 }
 
 func (dc *DmConnection) lobFetchAll() bool {

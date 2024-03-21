@@ -344,6 +344,10 @@ func (Dm_build_861 *dm_build_648) Dm_build_860(dm_build_862 []byte, dm_build_863
 		panic("Unsupported Charset!")
 	}
 
+	if dm_build_864.ServerClientEncodingSame() {
+		return dm_build_862
+	}
+
 	if dm_build_864.encodeBuffer == nil {
 		dm_build_864.encodeBuffer = bytes.NewBuffer(nil)
 		dm_build_864.encode = dm_build_907(dm_build_864.getServerEncoding())
@@ -431,6 +435,10 @@ func (Dm_build_898 *dm_build_648) Dm_build_897(dm_build_899 []byte, dm_build_900
 		}
 
 		panic("Unsupported Charset!")
+	}
+
+	if dm_build_901.ServerClientEncodingSame() {
+		return dm_build_899
 	}
 
 	if dm_build_901.encodeBuffer == nil {

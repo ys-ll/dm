@@ -416,6 +416,8 @@ type DmConnector struct {
 	statSqlMaxCount int
 
 	statSqlRemoveMode int
+
+	clientEncoding string
 }
 
 func (c *DmConnector) init() *DmConnector {
@@ -624,6 +626,7 @@ func (c *DmConnector) setAttributes(props *Properties) error {
 	c.statSqlMaxCount = props.GetInt(StatSqlMaxCountKey, StatSqlMaxCountDef, 0, 100000)
 	StatSqlMaxCount = c.statSqlMaxCount
 	c.parseStatSqlRemoveMode(props)
+	c.clientEncoding = props.GetString("clientEncoding", "")
 	return nil
 }
 
