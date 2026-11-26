@@ -1,4 +1,4 @@
-module gitee.com/travelliu/dm
+module github.com/ys-ll/dm
 
 go 1.13
 

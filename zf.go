@@ -8,7 +8,7 @@ package dm
 import (
 	"context"
 	"database/sql/driver"
-	"gitee.com/travelliu/dm/util"
+	"github.com/ys-ll/dm/util"
 	"io"
 	"reflect"
 	"time"

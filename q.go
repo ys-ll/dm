@@ -6,7 +6,7 @@ package dm
 
 import (
 	"database/sql/driver"
-	"gitee.com/travelliu/dm/util"
+	"github.com/ys-ll/dm/util"
 	"math"
 	"strconv"
 	"strings"

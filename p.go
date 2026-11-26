@@ -8,7 +8,7 @@ import (
 	"context"
 	"database/sql"
 	"database/sql/driver"
-	"gitee.com/travelliu/dm/i18n"
+	"github.com/ys-ll/dm/i18n"
 	"sync"
 )
 

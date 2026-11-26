@@ -8,7 +8,7 @@ package dm
 import (
 	"bytes"
 	"fmt"
-	"gitee.com/travelliu/dm/i18n"
+	"github.com/ys-ll/dm/i18n"
 	"runtime"
 )
 

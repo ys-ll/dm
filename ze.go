@@ -9,7 +9,7 @@ import (
 	"context"
 	"database/sql/driver"
 	"fmt"
-	"gitee.com/travelliu/dm/util"
+	"github.com/ys-ll/dm/util"
 	"io"
 	"reflect"
 	"strconv"

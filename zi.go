@@ -6,7 +6,7 @@ package dm
 
 import (
 	"bytes"
-	"gitee.com/travelliu/dm/util"
+	"github.com/ys-ll/dm/util"
 	"io"
 	"math/big"
 	"strconv"

@@ -9,7 +9,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"errors"
-	"gitee.com/travelliu/dm/util"
+	"github.com/ys-ll/dm/util"
 	"io"
 	"regexp"
 	"strings"
